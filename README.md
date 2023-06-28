@@ -20,3 +20,7 @@ UnitPrice: Unit price. Numeric. Product price per unit in sterling (Â£).
 CustomerID: Customer number. Nominal. A 5-digit integral number uniquely assigned to each customer.
 
 Country: Country name. Nominal. The name of the country where a customer resides.
+
+## Analysis
+
+Analysis is done in notebooks named Question #.ipynb and the corresponding python code as in Question_#.py
