@@ -67,5 +67,5 @@ class SalesForecaster:
 # Example usage
 forecaster = SalesForecaster('online_retail_II.csv')
 forecaster.train()
-forecast = forecaster.predict(10 * 7)  # Predict the next 70 days
+forecast = forecaster.predict(4 * 7)  # Predict the next 4 weeks
 forecaster.save_model('serialized_model.json')
