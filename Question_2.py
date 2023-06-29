@@ -110,7 +110,7 @@ class CustomerPredictionModel:
         plt.show()
 
 if __name__ == "__main__":
-    model = CustomerPredictionModel("data.csv")
+    model = CustomerPredictionModel("online_retail_II.csv")
     model.preprocess()
     customer_data = model.feature_engineering()
     X_test, y_test = model.model_building(customer_data)
