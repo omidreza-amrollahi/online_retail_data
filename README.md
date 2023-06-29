@@ -15,7 +15,7 @@ Quantity: The quantities of each product (item) per transaction. Numeric.
 
 InvoiceDate: Invice date and time. Numeric. The day and time when a transaction was generated.
 
-UnitPrice: Unit price. Numeric. Product price per unit in sterling (Â£).
+UnitPrice: Unit price. Numeric. Product price per unit in sterling.
 
 CustomerID: Customer number. Nominal. A 5-digit integral number uniquely assigned to each customer.
 
