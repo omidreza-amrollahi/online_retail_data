@@ -34,9 +34,9 @@ class CustomerPredictionModel:
         Perform feature engineering on the DataFrame. 
         Creates new features for the model.
         """
-        self.df['PurchasedNextQuarter'] = ((self.df.sort_values('InvoiceDate').groupby('Customer ID')['InvoiceDate']
+        self.df['PurchasedNextQuarter'] = ((self.df.sort_values('InvoiceDate').groupby('Customer ID', group_keys=True)['InvoiceDate']
                                             .shift(-1) - self.df['InvoiceDate']) <= pd.Timedelta(90, unit='D')).astype(int)
-        self.df['HasReturned'] = self.df.groupby('Customer ID')['Quantity'].apply(lambda x: (x < 0)).astype(int).values
+        self.df['HasReturned'] = self.df.groupby('Customer ID', group_keys=True)['Quantity'].apply(lambda x: (x < 0)).astype(int).values
 
         customer_data = self.df.groupby('Customer ID').agg({
             'Quantity': 'sum',
