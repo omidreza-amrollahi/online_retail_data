@@ -76,5 +76,7 @@ if __name__ == "__main__":
     country = "Germany"
     item_name = "PLASTERS IN TIN WOODLAND ANIMALS"
 
+    print("Market Basket Analysis for {} in {}:".format(item_name, country))
+    print("Possible items that can be associated with {}:".format(item_name))
     mba = MarketBasketAnalysis(file, country, item_name)
     mba.run_analysis()
