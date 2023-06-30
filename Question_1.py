@@ -1,7 +1,9 @@
 import pandas as pd
 from prophet import Prophet
 from prophet.serialize import model_to_json
-
+from prophet.plot import plot_plotly, plot_components_plotly
+import matplotlib.pyplot as plt
+import plotly.offline as py
 
 class SalesForecaster:
     """
@@ -63,9 +65,22 @@ class SalesForecaster:
         with open(path, 'w') as fout:
             fout.write(model_to_json(self.model))
 
+    def plot_forecast(self):
+        """
+        Plot the forecasted values using the model's plot function.
+        """
+        if self.model is None or self.forecast is None:
+            raise Exception("You need to train the model and make a prediction before plotting.")
+
+        fig1 = plot_plotly(self.model, self.forecast)
+        py.plot(fig1)
+        fig2 = plot_components_plotly(self.model, self.forecast)
+        py.plot(fig2)
+
 
 # Example usage
 forecaster = SalesForecaster('online_retail_II.csv')
 forecaster.train()
 forecast = forecaster.predict(4 * 7)  # Predict the next 4 weeks
 forecaster.save_model('serialized_model.json')
+forecaster.plot_forecast()
