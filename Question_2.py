@@ -48,13 +48,13 @@ class CustomerPredictionModel:
         customer_data.columns = ['_'.join(col).strip() for col in customer_data.columns.values]
         return customer_data
 
-    def model_building(self, customer_data):
+    def model_building(self, customer_data, params):
         """
-        Build and train the model using the customer_data DataFrame. 
-        The model uses RandomForestClassifier with hyperparameters optimized by Optuna.
-
+        Build and train the model using the customer_data DataFrame and the specified hyperparameters.
+    
         Parameters:
         customer_data (DataFrame): The customer data to use for model training.
+        params (dict): Dictionary of hyperparameters to use in the model.
         """
         features = ['Quantity_sum', 'Price_mean', 'HasReturned_max']
         target = 'PurchasedNextQuarter_max'
@@ -65,7 +65,20 @@ class CustomerPredictionModel:
         scaler = StandardScaler()
         X_res = scaler.fit_transform(X_res)
         X_train, X_test, y_train, y_test = train_test_split(X_res, y_res, test_size=0.2, random_state=42)
+    
+        self.model = RandomForestClassifier(**params, random_state=42)
+        self.model.fit(X_train, y_train)
+    
+        return X_test, y_test
 
+    def model_optimization(self, X_train, y_train):
+        """
+        Optimize the hyperparameters of the model using Optuna.
+    
+        Parameters:
+        X_train (DataFrame): The train features.
+        y_train (Series): The train target.
+        """
         def objective(trial):
             n_estimators = trial.suggest_int('n_estimators', 50, 500)
             max_depth = trial.suggest_int('max_depth', 10, 50)
@@ -74,15 +87,12 @@ class CustomerPredictionModel:
             clf = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, 
                                         min_samples_split=min_samples_split, min_samples_leaf=min_samples_leaf, random_state=42)
             return cross_val_score(clf, X_train, y_train, cv=5, scoring='accuracy').mean()
-
+    
         study = optuna.create_study(direction='maximize')
         study.optimize(objective, n_trials=50)
+    
+        return study.best_params
 
-        params = study.best_params
-        self.model = RandomForestClassifier(**params, random_state=42)
-        self.model.fit(X_train, y_train)
-
-        return X_test, y_test
 
     def evaluate(self, X_test, y_test):
         """
@@ -113,6 +123,14 @@ if __name__ == "__main__":
     model = CustomerPredictionModel("online_retail_II.csv")
     model.preprocess()
     customer_data = model.feature_engineering()
-    X_test, y_test = model.model_building(customer_data)
+
+    # Define default parameters
+    default_params = {'n_estimators': 469, 'max_depth': 22, 'min_samples_split': 3, 'min_samples_leaf': 2}
+    X_test, y_test = model.model_building(customer_data, default_params)
+
     model.evaluate(X_test, y_test)
     model.plot_feature_importance()
+
+    # Call optimization if you want to optimize the model
+    # best_params = model.model_optimization(X_train, y_train)
+    # print(f"Best parameters: {best_params}")
